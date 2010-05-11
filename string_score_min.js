@@ -9,4 +9,8 @@
   * Date: 2009-06-20
   * Version 1.0
   */
-String.prototype.score=function(d){function e(a,b){var m=Math.min(a,b);if(m>-1)return m;return Math.max(a,b);}if(this==d)return 1.0;var f=[];var g=d.length;var h=this;var j=h.length;for(var i=0,k=g;i<k;i++){var location=e(h.indexOf(d.charAt(i).toLowerCase()),h.indexOf(d.charAt(i).toUpperCase()));if(location===-1)return 0;f.push(0.5);if(h.charAt(location)===d.charAt(i))f[f.length-1]+=0.1;if(location===0)f[f.length-1]+=0.4;if(h.charAt(location-1)==='\x20')f[f.length-1]+=0.4*Math.min(location,5);h=h.substring(location+1,j);}for(i=0,sum=0,l=g;i<l;i++)sum+=f[i];return sum/this.length;};
+String.prototype.score=function(abbr){if(this==abbr)return 1.0;function firstValidIndex(a,b){var min=Math.min(a,b);if(min>-1)return min;return Math.max(a,b);}
+var scores=[],abbr_length=abbr.length,string=this,string_length=string.length,start_of_string_bonus=false,abbr_score,percentage_of_matched_string,word_score,my_score;for(var i=0,len=abbr_length;i<len;i++){var index_in_string=firstValidIndex(string.indexOf(abbr.charAt(i).toLowerCase()),string.indexOf(abbr.charAt(i).toUpperCase()));if(index_in_string===-1)return 0;scores.push(0.1);if(string.charAt(index_in_string)===abbr.charAt(i))scores[scores.length-1]+=0.1;if(index_in_string===0){scores[scores.length-1]+=0.8;if(i===0)start_of_string_bonus=true;}
+if(string.charAt(index_in_string-1)===' ')
+scores[scores.length-1]+=0.8;string=string.substring(index_in_string+1,string_length);}
+for(i=0,sum=0,l=abbr_length;i<l;i++)sum+=scores[i];abbr_score=sum/scores.length;percentage_of_matched_string=abbr_length/this.length;word_score=abbr_score*percentage_of_matched_string;my_score=(word_score+abbr_score)/2;if(start_of_string_bonus&&my_score+0.1<1)my_score+=0.1;return my_score;};
